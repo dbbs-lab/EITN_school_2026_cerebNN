@@ -109,8 +109,8 @@ def rheobase_loss(nest_df, targ_df):
 
 def pacemaking_loss(targ, nest):
     try:
-        tf = float(_scalar(targ.loc[targ["current"] == 0, "mean_frequency"]))
-        nf = float(_scalar(nest.loc[nest["current"] == 0, "mean_frequency"]))
+        tf = _scalar(np.array(targ.loc[targ["current"] == 0, "mean_frequency"], dtype=float))
+        nf = _scalar(np.array(nest.loc[nest["current"] == 0, "mean_frequency"], dtype=float))
         rel = abs(nf - tf) / max(tf, 1e-9)
         return np.clip(rel / (1 + rel), 0, 1)
     except Exception:
@@ -119,8 +119,8 @@ def pacemaking_loss(targ, nest):
 
 def cv_loss(targ, nest, delta=0.1, alpha=0.3, regularity=False):
     try:
-        tcv = float(_scalar(targ.loc[targ["current"] == 0, "ISI_CV"]))
-        ncv = float(_scalar(nest.loc[nest["current"] == 0, "ISI_CV"]))
+        tcv = _scalar(np.array(targ.loc[targ["current"] == 0, "ISI_CV"], dtype=float))
+        ncv = _scalar(np.array(nest.loc[nest["current"] == 0, "ISI_CV"], dtype=float))
         diff = abs(ncv - tcv)
 
         if diff <= delta:
@@ -294,7 +294,7 @@ def curvature_loss(
 def post_first_spike_loss(
     targ, nest, protocol, thr=0.0, sign="pos", missing_penalty=0.5, mode="max"
 ):
-    start, end = protocol["end_stim"], protocol["duration"]
+    start, end = protocol["stim_end"], protocol["duration"]
 
     if getattr(targ, "empty", True) or getattr(nest, "empty", True):
         return float(missing_penalty)
@@ -339,7 +339,7 @@ def post_first_spike_loss(
 def poststim_autorhythm_loss(
     targ_post, nest_post, protocol, thr, transient=300.0, missing_penalty=0.5
 ):
-    start = protocol["end_stim"] + transient
+    start = protocol["stim_end"] + transient
     end = protocol["duration"]
     window = max(end - start, 1e-9)
 
@@ -382,7 +382,7 @@ def poststim_autorhythm_loss(
 def post_rebound_loss(
     targ, nest, protocol, window=50.0, thr=0.0, sign="pos", missing_penalty=0.5, scale=10
 ):
-    win_start = protocol["end_stim"]
+    win_start = protocol["stim_end"]
     win_end = win_start + window
     if getattr(targ, "empty", True) or getattr(nest, "empty", True):
         return float(missing_penalty)

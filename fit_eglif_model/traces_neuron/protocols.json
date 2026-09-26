@@ -10,5 +10,11 @@
       "stim_end": 700.0,
       "duration": 2000.0,
       "threshold": -43
+  },
+  "PC_sca6": {
+      "stim_start": 200.0,
+      "stim_end": 700.0,
+      "duration": 2000.0,
+      "threshold": -43
   }
 }
